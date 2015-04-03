@@ -8,7 +8,7 @@ import os
 import numpy as np
 import scipy as sc
 
-from astropy.io import fits
+#from astropy.io import fits
 
 import argparse
 
