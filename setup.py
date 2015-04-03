@@ -6,8 +6,10 @@ import sys
 import re
 import subprocess
 
-from distutils.core import setup, Extension
+from setuptools import find_packages, setup, Extension
 from Cython.Build import cythonize
+
+
 import numpy as np
 
 
@@ -28,30 +30,8 @@ current_version = get_version()
 
 # extensions to build
 
-extshdet = Extension ( 'py.shdet',
-    extra_compile_args = [ '-std=c11', '-fno-stack-protector-strong' ],
-    include_dirs = [ np.get_include(), 'shdet/include' ],
-    sources = [ 
-        'shdet/src/cooler_4k_pwr_vct_f.c',
-        'shdet/src/dsn_sgnl_f.c',
-        'shdet/src/get_prm_lst_f.c',
-        'shdet/src/input_arrays_f.c',
-        'shdet/src/input_parameters_f.c',
-        'shdet/src/input_variables_f.c',
-        'shdet/src/mdl_pwr_vct_f.c',
-        'shdet/src/opt_pwr_spr_fst_vct_f.c',
-        'shdet/src/opt_pwr_vct_f.c',
-        'shdet/src/read_ascii_shdet_f.c',
-        'shdet/src/rplc_prmtr_f.c',
-        'shdet/src/shdet_f.c',
-        'shdet/src/shdet_smltn_f.c',
-        'shdet/src/t_0_vct_f.c',
-        'shdet/src/time_eval.c',
-        'shdet/src/trimwhitespace.c',
-    ]
-)
 
-extensions = cythonize ( [ extshdet ] )
+extensions = cythonize ( [] )
 
 
 setup (
