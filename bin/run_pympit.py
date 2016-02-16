@@ -7,8 +7,7 @@ import sys
 import os
 import numpy as np
 import scipy as sc
-
-#from astropy.io import fits
+from astropy.io import fits
 
 import argparse
 
@@ -34,10 +33,14 @@ comm.Barrier()
 
 elapsed = stop - start
 
-for p in range ( comm.size ):
-    if p == comm.rank:
-        print ( 'Proc {}:  took {:.4f} s'.format( comm.rank, elapsed ), file=sys.stderr )
-    comm.Barrier()
+if comm.rank == 0:
+    print("Work time = {:.4f}s".format(elapsed))
+
+#for p in range ( comm.size ):
+#    if p == comm.rank:
+#        print ( 'Proc {}:  took {:.4f} s'.format( comm.rank, elapsed ), file=sys.stderr )
+#    comm.Barrier()
+
 
 
 
