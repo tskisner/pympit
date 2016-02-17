@@ -7,7 +7,11 @@ import sys
 import os
 import numpy as np
 import scipy as sc
-from astropy.io import fits
+
+# Astropy has known problems with pyinstaller.
+# See pull requests #4531 and #960
+#
+#from astropy.io import fits
 
 import argparse
 

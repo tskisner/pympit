@@ -12,12 +12,14 @@ import pympit as pt
 
 world = MPI.COMM_WORLD
 rank = world.rank
-np = world.size
+procs = world.size
 
 # Split the communicator into 2 groups
 
 ngroups = 2
-groupsize = int(np / ngroups)
+groupsize = int(procs / ngroups)
+if groupsize == 0:
+    groupsize = 1
 group = int(rank / groupsize)
 grank = rank % groupsize
 
@@ -37,33 +39,30 @@ local_data = np.ones(nmsg, dtype=np.int64)
 
 start = MPI.Wtime()
 
-world_reduce = np.zeros_like(local_data)
-world.allreduce(sendobj=local_data, recvobj=world_data, op=MPI.SUM)
+world_reduce = world.allreduce(local_data, op=MPI.SUM)
 
 chksum = np.sum(world_reduce)
-if chksum != (nmsg * np):
-    print("process {}:  world comm allreduce = {} instead of {}".format(rank, chksum, (nmsg*np)))
+if chksum != (nmsg * procs):
+    print("process {}:  world comm allreduce = {} instead of {}".format(rank, chksum, (nmsg*procs)))
 
-group_reduce = np.zeros_like(local_data)
-gcomm.allreduce(sendobj=local_data, recvobj=group_reduce, op=MPI.SUM)
+group_reduce = gcomm.allreduce(local_data, op=MPI.SUM)
 
 chksum = np.sum(group_reduce)
 if chksum != (nmsg * groupsize):
     print("process {} of group {}:  group comm allreduce = {} instead of {}".format(grank, group, chksum, (nmsg*groupsize)))
 
-rank_reduce = np.zeros_like(local_data)
-rcomm.allreduce(sendobj=group_reduce, recvobj=rank_reduce, op=MPI.SUM)
+rank_reduce = rcomm.allreduce(group_reduce, op=MPI.SUM)
 
 chksum = np.sum(rank_reduce)
-if chksum != (nmsg * np):
-    print("process {} of group {}:  rank comm allreduce = {} instead of {}".format(grank, group, chksum, (nmsg*np)))
+if chksum != (nmsg * procs):
+    print("process {} of group {}:  rank comm allreduce = {} instead of {}".format(grank, group, chksum, (nmsg*procs)))
 
 stop = MPI.Wtime()
 
-comm.Barrier()
+world.Barrier()
 
 elapsed = stop - start
 
-if comm.rank == 0:
+if rank == 0:
     print("Communication time = {:.4f}s".format(elapsed))
 
