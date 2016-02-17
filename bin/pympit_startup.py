@@ -36,11 +36,3 @@ elapsed = stop - start
 if comm.rank == 0:
     print("Work time = {:.4f}s".format(elapsed))
 
-#for p in range ( comm.size ):
-#    if p == comm.rank:
-#        print ( 'Proc {}:  took {:.4f} s'.format( comm.rank, elapsed ), file=sys.stderr )
-#    comm.Barrier()
-
-
-
-

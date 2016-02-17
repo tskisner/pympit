@@ -2,7 +2,32 @@
 
 block_cipher = None
 
-a = Analysis(['bin/run_pympit.py'],
+astart = Analysis(['bin/pympit_startup.py'],
+             binaries=None,
+             datas=None,
+             hiddenimports=['six'],
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=[],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher)
+
+pyzstart = PYZ(astart.pure, astart.zipped_data,
+             cipher=block_cipher)
+
+exestart = EXE(pyzstart,
+          astart.scripts,
+          astart.binaries,
+          astart.zipfiles,
+          astart.datas,
+          name='pympit_startup',
+          debug=False,
+          strip=False,
+          upx=False,
+          console=True )
+
+acoll = Analysis(['bin/pympit_collective.py'],
              binaries=None,
              datas=None,
              hiddenimports=[],
@@ -13,16 +38,16 @@ a = Analysis(['bin/run_pympit.py'],
              win_private_assemblies=False,
              cipher=block_cipher)
 
-pyz = PYZ(a.pure, a.zipped_data,
+pyzcoll = PYZ(acoll.pure, acoll.zipped_data,
              cipher=block_cipher)
 
-exe = EXE(pyz,
-          a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
-          name='run_pympit',
+execoll = EXE(pyzcoll,
+          acoll.scripts,
+          acoll.binaries,
+          acoll.zipfiles,
+          acoll.datas,
+          name='pympit_collective',
           debug=False,
           strip=False,
-          upx=True,
+          upx=False,
           console=True )

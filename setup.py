@@ -39,7 +39,8 @@ class FreezeInstall(install):
             if (os.path.exists(os.path.join(dir, "pyinstaller"))):
                 proc = subprocess.Popen(["pyinstaller", "pympit.spec"])
                 proc.wait()
-                shutil.copy2(os.path.join("dist", "run_pympit"), os.path.join(self.prefix, "bin", "run_pympit"))
+                shutil.copy2(os.path.join("dist", "pympit_startup"), os.path.join(self.prefix, "bin", "pympit_startup"))
+                shutil.copy2(os.path.join("dist", "pympit_collective"), os.path.join(self.prefix, "bin", "pympit_collective"))
 
 
 
@@ -58,7 +59,7 @@ setup (
     url = 'https://github.com/tskisner/pympit',
     ext_modules = extensions,
     packages = [ 'pympit' ],
-    scripts = [ 'bin/run_pympit.py' ],
+    scripts = [ 'bin/pympit_startup.py', 'bin/pympit_collective.py' ],
     license = 'None',
     requires = ['Python (>2.7.0)', ],
     cmdclass = {'install': FreezeInstall}
