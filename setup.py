@@ -29,21 +29,20 @@ def get_version():
 
 current_version = get_version()
 
+scripts = glob.glob('bin/*')
+scripts_exe = [ re.sub(r'\..*', '', b) for b in scripts ]
 
 class FreezeInstall(install):
     def run(self):
         install.run(self)
         # see if we have pyinstaller available
-        print("DEBUG:  {}".format(self.prefix))
         for dir in os.getenv("PATH").split(':'):                                           
             if (os.path.exists(os.path.join(dir, "pyinstaller"))):
                 proc = subprocess.Popen(["pyinstaller", "pympit.spec"])
                 proc.wait()
-                shutil.copy2(os.path.join("dist", "pympit_startup"), os.path.join(self.prefix, "bin", "pympit_startup"))
-                shutil.copy2(os.path.join("dist", "pympit_collective"), os.path.join(self.prefix, "bin", "pympit_collective"))
-
-
-
+                for scr in scripts_exe:
+                    sname = os.path.basename(scr)
+                    shutil.copy2(os.path.join("dist", sname), os.path.join(self.prefix, "bin", sname))
 
 # extensions to build
 #extensions = cythonize([])
@@ -58,10 +57,10 @@ setup (
     author_email = 'mail@theodorekisner.com',
     url = 'https://github.com/tskisner/pympit',
     ext_modules = extensions,
-    packages = [ 'pympit' ],
-    scripts = [ 'bin/pympit_startup.py', 'bin/pympit_collective.py' ],
+    packages = ['pympit'],
+    scripts = scripts,
     license = 'None',
-    requires = ['Python (>2.7.0)', ],
+    requires = ['Python (>2.7.0)'],
     cmdclass = {'install': FreezeInstall}
 )
 
