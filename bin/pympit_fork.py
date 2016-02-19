@@ -30,7 +30,7 @@ start = MPI.Wtime()
 
 local_out = []
 
-proc = sp.Popen(['hostname'], stdout=sp.PIPE, stderr=sp.PIPE)
+proc = sp.Popen(['pympit_worker.py'], stdout=sp.PIPE, stderr=sp.PIPE)
 outs, errs = proc.communicate()
 proc.wait()
 
