@@ -9,10 +9,8 @@ import scipy as sc
 
 import socket
 
-# Astropy has known problems with pyinstaller.
-# See pull requests #4531 and #960
-#
-#from astropy.io import fits
+
+from astropy.io import fits
 
 import argparse
 

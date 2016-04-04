@@ -38,11 +38,12 @@ class FreezeInstall(install):
         # see if we have pyinstaller available
         for dir in os.getenv("PATH").split(':'):                                           
             if (os.path.exists(os.path.join(dir, "pyinstaller"))):
-                proc = subprocess.Popen(["pyinstaller", "pympit.spec"])
+                proc = subprocess.Popen(["pyinstaller", "-F", "pympit.spec"])
                 proc.wait()
                 for scr in scripts_exe:
                     sname = os.path.basename(scr)
-                    shutil.copy2(os.path.join("dist", sname), os.path.join(self.prefix, "bin", sname))
+                    if os.path.isfile(os.path.join("dist", sname)):
+                        shutil.copy2(os.path.join("dist", sname), os.path.join(self.prefix, "bin", sname))
 
 # extensions to build
 #extensions = cythonize([])

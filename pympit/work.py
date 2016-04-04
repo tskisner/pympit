@@ -5,6 +5,8 @@ from mpi4py import MPI
 
 import unittest
 
+import os
+
 import numpy as np
 import scipy as sc
 
@@ -16,8 +18,6 @@ class Math(object):
     '''
     Do some FFTs of random data
     '''
-
-
     def __init__(self, seed=0, rms=100.0, fftlen=1048576):
         '''
         seed = random number seed (default 0)
@@ -41,6 +41,69 @@ class Math(object):
         return
 
 
+class IOWork(object):
+    '''
+    Create files and perform read / write operations
+    '''
+    def __init__(self, comm, dir='.', procs_per_file=1, datasize=100000000):
+        self.comm = comm
+        self.dir = dir
+        self.ppfile = procs_per_file
+        self.prefix = "data_"
+
+        self.nfile = int(comm.size / self.ppfile)
+        self.myfile = int(comm.rank / self.ppfile)
+        self.filerank = comm.rank % self.ppfile
+
+        self.filesize = int(datasize / self.nfile)
+        self.filecount = int(self.filesize / 8)
+        self.filesize = self.filecount * 8
+
+        self.datasize = self.filesize * self.nfile
+        self.filechunk = int(self.filesize / self.ppfile)
+
+
+    def create_data(self):
+        if self.comm.rank == 0:
+            for i in range(self.nfile):
+                path = os.path.join(self.dir, "{}{:04d}".format(self.prefix, i))
+                with open(path, "wb") as f:
+                    np.zeros(self.filecount, dtype=np.float64).tofile(f)
+        self.comm.barrier()
+        return
+
+
+    def write(self):
+        mypath = os.path.join(self.dir, "{}{:04d}".format(self.prefix, self.myfile))
+        offset = self.filerank * self.filechunk
+
+        handle = open(mypath, 'wb')
+        handle.seek(8 * offset, os.SEEK_SET)
+
+        data = np.random.random(size=self.filechunk)
+        data.tofile(handle)
+
+        handle.close()
+
+        self.comm.barrier()
+        return
+
+
+    def read(self):
+        mypath = os.path.join(self.dir, "{}{:04d}".format(self.prefix, self.myfile))
+        offset = self.filerank * self.filechunk
+
+        handle = open(mypath, 'rb')
+        handle.seek(8 * offset, os.SEEK_SET)
+
+        data = np.fromfile(handle, dtype=np.float64, count=self.filechunk)
+
+        handle.close()
+
+        self.comm.barrier()
+        return
+
+
 
 class WorkTest(unittest.TestCase):
 
@@ -58,7 +121,26 @@ class WorkTest(unittest.TestCase):
         mt.ffts( data )
         stop = MPI.Wtime()
         elapsed = stop - start
-        print('Proc {}:  test took {:.4f} s'.format(self.rank, elapsed))
+        print('Proc {}:  math test took {:.4f} s'.format(self.rank, elapsed))
+
+
+    def test_io(self):
+        io = IOWork(self.comm)
+        start = MPI.Wtime()
+        io.create_data()
+        stop = MPI.Wtime()
+        elapsed = stop - start
+        print('Proc {}:  create data took {:.4f} s'.format(self.rank, elapsed))
+        start = MPI.Wtime()
+        io.write()
+        stop = MPI.Wtime()
+        elapsed = stop - start
+        print('Proc {}:  write data took {:.4f} s'.format(self.rank, elapsed))
+        start = MPI.Wtime()
+        io.read()
+        stop = MPI.Wtime()
+        elapsed = stop - start
+        print('Proc {}:  read data took {:.4f} s'.format(self.rank, elapsed))
 
 
 if __name__ == "__main__":
