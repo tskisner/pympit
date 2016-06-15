@@ -23,8 +23,24 @@ parser = argparse.ArgumentParser(description='Run an MPI test in python with sub
 args = parser.parse_args()
 
 comm = MPI.COMM_WORLD
+rank = comm.rank
+nproc = comm.size
+
+ngroup = int(nproc / 4)
+group = int(rank / ngroup)
+group_rank = rank % ngroup
+            
+comm_group = comm.Split(color=group, key=group_rank)
+comm_rank = comm.Split(color=group_rank, key=group)
 
 start = MPI.Wtime()
+
+if group_rank == 0:
+    print("Group {} of {} has {} processes".format(group+1, ngroup, comm_group.size))
+
+comm_group.barrier()
+comm_rank.barrier()
+comm.barrier()
 
 local_out = []
 
@@ -37,13 +53,13 @@ local_out.append(outs)
 stop = MPI.Wtime()
 elapsed = stop - start
 
-comm.Barrier()
+comm.barrier()
 
 for p in range(comm.size):
     if p == comm.rank:
         print("proc {:02d} {:.3f}s:".format(p, elapsed))
         for line in local_out:
             print("  {}".format(line.rstrip()))
-    comm.Barrier()
+    comm.barrier()
 
 
