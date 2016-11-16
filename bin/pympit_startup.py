@@ -9,13 +9,9 @@ import os
 import numpy as np
 import scipy as sc
 
-
-from astropy.io import fits
-
 import argparse
 
 import pympit as pt
-
 
 
 parser = argparse.ArgumentParser( description='Run an MPI test in python' )
@@ -23,6 +19,10 @@ parser.add_argument( '--fftlen', required=False, default=5242880, help='FFT leng
 args = parser.parse_args()
 
 comm = MPI.COMM_WORLD
+
+startup = pt.work.since_start(MPI.COMM_WORLD)
+if comm.rank == 0:
+    print("Startup time = {} seconds".format(startup))
 
 start = MPI.Wtime()
 

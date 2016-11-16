@@ -4,14 +4,31 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from mpi4py import MPI
 
 import unittest
+import datetime
 
 import os
 
 import numpy as np
 import scipy as sc
+import astropy.io.fits as af
 
-#import work_helper
 
+def since_start(comm):
+    comm.barrier()
+    elapsed = 0
+    if comm.rank == 0:
+        tnow = datetime.datetime.now()
+        if "STARTTIME" in os.environ:
+            try:
+                tstart = datetime.datetime.strptime(os.getenv("STARTTIME"), "%Y%m%d-%H:%M:%S")
+                dt = tnow - tstart
+                elapsed = dt.seconds
+            except ValueError:
+                print("unable to parse $STARTTIME={}".format(os.getenv("STARTTIME")))
+        else:
+            print("elapsed time unknown since $STARTTIME not set")
+    elapsed = comm.bcast(elapsed, root=0)
+    return elapsed
 
 
 class Math(object):

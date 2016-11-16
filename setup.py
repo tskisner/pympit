@@ -36,7 +36,7 @@ class FreezeInstall(install):
     def run(self):
         install.run(self)
         # see if we have pyinstaller available
-        for dir in os.getenv("PATH").split(':'):                                           
+        for dir in os.getenv("PATH").split(':'):
             if (os.path.exists(os.path.join(dir, "pyinstaller"))):
                 proc = subprocess.Popen(["pyinstaller", "-F", "pympit.spec"])
                 proc.wait()
@@ -64,7 +64,6 @@ setup (
     requires = ['Python (>2.7.0)'],
     cmdclass = {'install': FreezeInstall}
 )
-
 
 # extra cleanup of cython generated sources
 

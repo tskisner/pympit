@@ -9,9 +9,6 @@ import os
 import numpy as np
 import scipy as sc
 
-
-from astropy.io import fits
-
 import argparse
 
 import subprocess as sp
@@ -25,6 +22,10 @@ args = parser.parse_args()
 comm = MPI.COMM_WORLD
 rank = comm.rank
 nproc = comm.size
+
+startup = pt.work.since_start(MPI.COMM_WORLD)
+if comm.rank == 0:
+    print("Startup time = {} seconds".format(startup))
 
 ngroup = int(nproc / 4)
 group = int(rank / ngroup)

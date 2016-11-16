@@ -10,10 +10,13 @@ import numpy as np
 
 import pympit as pt
 
-
 world = MPI.COMM_WORLD
 rank = world.rank
 procs = world.size
+
+startup = pt.work.since_start(MPI.COMM_WORLD)
+if world.rank == 0:
+    print("Startup time = {} seconds".format(startup))
 
 # Split the communicator into 2 groups
 

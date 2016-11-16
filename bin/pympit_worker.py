@@ -9,7 +9,6 @@ import scipy as sc
 
 import socket
 
-
 from astropy.io import fits
 
 import argparse
