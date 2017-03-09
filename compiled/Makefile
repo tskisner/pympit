@@ -1,14 +1,19 @@
 SHELL = /bin/bash
 
-CC = mpicc
-CFLAGS = -O3 -fPIC
+ifndef CC
+  CC = mpicc
+endif
+
+ifndef CFLAGS
+  CFLAGS = -O3 -fPIC
+endif
 
 
 all : pympit_compiled
 
 
 pympit_compiled : pympit_compiled.o
-	$(CC) -o pympit_compiled pympit_compiled.o
+	$(CC) -shared -o pympit_compiled pympit_compiled.o
 
 pympit_compiled.o : pympit_compiled.c
 	$(CC) $(CFLAGS) -o pympit_compiled.o -c pympit_compiled.c
