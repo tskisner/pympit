@@ -27,9 +27,9 @@ comm = MPI.COMM_WORLD
 
 if comm.rank == 0:
     ts = time.localtime(prestart)
-    print("Python interpreter started at {}{}{} {}:{}:{}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
+    print("Python interpreter started at {:04d}{:02d}{:02d} {:02d}:{:02d}:{:02d}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
     ts = time.localtime(mpistart)
-    print("MPI init finished at {}{}{} {}:{}:{}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
+    print("MPI init finished at {:04d}{:02d}{:02d} {:02d}:{:02d}:{:02d}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
 
 startup = pt.work.since_start(MPI.COMM_WORLD)
 if comm.rank == 0:
