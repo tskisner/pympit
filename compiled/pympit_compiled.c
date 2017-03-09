@@ -43,9 +43,7 @@ int main ( int argc, char *argv[] ) {
     }
 
     data = (double*) calloc ( n, sizeof(double) );
-    if ( rank == 0 ) {
-        red = (double*) calloc ( n, sizeof(double) );
-    }
+    red = (double*) calloc ( n, sizeof(double) );
 
     if ( ( data == NULL ) || ( red == NULL ) ) {
         fprintf ( stderr, "Cannot allocate memory\n" );
@@ -60,9 +58,7 @@ int main ( int argc, char *argv[] ) {
     ret = MPI_Allreduce ( (void *) data, (void *) red, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
 
     free ( data );
-    if ( rank == 0 ) {
-        free ( red );
-    }
+    free ( red );
 
     time ( &thetime );
     timeinfo = localtime ( &thetime );
