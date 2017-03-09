@@ -2,7 +2,12 @@
 
 from __future__ import absolute_import, division, print_function, unicode_literals, with_statement
 
+# Attempt to get the time before MPI initialization
+import time
+prestart = time.time()
+
 from mpi4py import MPI
+mpistart = time.time()
 
 import sys
 import os
@@ -20,9 +25,15 @@ args = parser.parse_args()
 
 comm = MPI.COMM_WORLD
 
+if comm.rank == 0:
+    ts = time.localtime(prestart)
+    print("Python interpreter started at {}{}{} {}:{}:{}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
+    ts = time.localtime(mpistart)
+    print("MPI init finished at {}{}{} {}:{}:{}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
+
 startup = pt.work.since_start(MPI.COMM_WORLD)
 if comm.rank == 0:
-    print("Startup time = {} seconds".format(startup))
+    print("Total startup time = {} seconds".format(startup))
 
 start = MPI.Wtime()
 
