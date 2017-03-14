@@ -7,6 +7,8 @@ import time
 prestart = time.time()
 
 from mpi4py import MPI
+
+MPI.COMM_WORLD.barrier()
 mpistart = time.time()
 
 import sys
@@ -31,6 +33,8 @@ if comm.rank == 0:
     ts = time.localtime(mpistart)
     print("MPI init finished at {:04d}{:02d}{:02d} {:02d}:{:02d}:{:02d}".format(ts.tm_year, ts.tm_mon, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec))
 
+
+comm.barrier()
 startup = pt.work.since_start(MPI.COMM_WORLD)
 if comm.rank == 0:
     print("Total startup time = {} seconds".format(startup))
